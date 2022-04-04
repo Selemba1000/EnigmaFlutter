@@ -1,9 +1,11 @@
 import 'package:enigma/enigma_basic_page.dart';
+import 'package:enigma/enigma_gui.dart';
 import 'package:enigma/enigma_solver_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
+  runApp(EnigmaGui());
 }
 
 class MyApp extends StatelessWidget {

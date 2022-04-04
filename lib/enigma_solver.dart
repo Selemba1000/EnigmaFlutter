@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:enigma/enigma.dart';
+import 'package:path/path.dart' as p;
 
 class EnigmaSolver{
 
@@ -190,6 +191,9 @@ Future<void> mainIsolate(SendPort snd) async {
 }
 
 void workerTask(SendPort snd) async {
+  var filePath = p.join(Directory.current.path, 'assets', 'allpossibilities.txt');
+  File file = File(filePath);
+  List<String> allstrings = file.readAsLinesSync();
   var rcv = ReceivePort();
   var rcvs = StreamQueue(rcv);
   String crypt;
@@ -202,6 +206,7 @@ void workerTask(SendPort snd) async {
   while(true){
     var get = await rcvs.next;
     if (get is int){
+      /*
       int ukw = (get%3)+100;
       int w3 = ((get/3).round()%3)+1;
       int s3 = (get/3/3).round()%26;
@@ -211,12 +216,13 @@ void workerTask(SendPort snd) async {
       int s1 = (get/3/3/26/3/26/3).round()%26;
       var enigma = Enigma(w1, s1, w2, s2, w3, s3, ukw);
       var clear = enigma.schluesselnString(crypt);
-      double score = 0;
-      for(int i = 0;i<26;i++){
-        var count = intToChar(i).allMatches(clear).length;
-        score+=logdb(clear.length, propabilitygrid[i], count);
+
+       */
+      int score = 0;
+      for(var i=0;i<crypt.length;i++){
+        if(crypt[i]==allstrings[get][i]) score--;
       }
-      snd.send(Solution(get, clear, score, workerID));
+      snd.send(Solution(get, "", score.toDouble(), workerID));
     }else{
       break;
     }
