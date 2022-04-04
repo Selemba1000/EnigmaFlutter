@@ -43,7 +43,8 @@ class _BasicEnigmaSate extends State<BasicEnigma> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.black, width: 5),
-                      color: Colors.green[200]),
+                      //color: Colors.green[200]),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 100),
                     child: Row(

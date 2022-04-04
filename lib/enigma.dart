@@ -40,15 +40,15 @@ class Enigma {
   }
 
   int schluesselnChar(int char) {
-    if(walzen[0]._position+1==walzen[0]._uebertragskerbe) {
-      walzen[1]._position=(walzen[1]._position+1)%26;
-    } else if(walzen[1]._position+1==walzen[1]._uebertragskerbe){
-      walzen[1]._position=(walzen[1]._position+1)%26;
+    if(walzen[0].position+1==walzen[0]._uebertragskerbe) {
+      walzen[1].position=(walzen[1].position+1)%26;
+    } else if(walzen[1].position+1==walzen[1]._uebertragskerbe){
+      walzen[1].position=(walzen[1].position+1)%26;
     }
-    if(walzen[1]._position+1==walzen[1]._uebertragskerbe){
-      walzen[2]._position=(walzen[2]._position+1)%26;
+    if(walzen[1].position+1==walzen[1]._uebertragskerbe){
+      walzen[2].position=(walzen[2].position+1)%26;
     }
-    walzen[0]._position=(walzen[0]._position+1)%26;
+    walzen[0].position=(walzen[0].position+1)%26;
     return walzen[0].revVerschluesseln(walzen[1].revVerschluesseln(walzen[2].revVerschluesseln(
         umkehrwalze.verschluesseln(walzen[2].verschluesseln(
             walzen[1].verschluesseln(walzen[0].verschluesseln(char)))))));
@@ -61,20 +61,20 @@ class Enigma {
 }
 
 class Walze {
-  int _position = 0;
+  int position = 0;
   List<int> _verkabelung=[];
   int _uebertragskerbe = 100;
 
   int verschluesseln(int char) {
-    return (_verkabelung[(char + _position)%26]-1-_position)%26;
+    return (_verkabelung[(char + position)%26]-1-position)%26;
   }
 
   int revVerschluesseln(int char){
-    return (_verkabelung.indexOf((char + _position)%26+1)-_position)%26;
+    return (_verkabelung.indexOf((char + position)%26+1)-position)%26;
   }
 
-  Walze(int position, int nummer) {
-    _position = position;
+  Walze(int startposition, int nummer) {
+    position = startposition;
     switch (nummer) {
       case 1:
         _verkabelung = [
