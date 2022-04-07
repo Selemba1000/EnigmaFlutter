@@ -584,11 +584,16 @@ Widget leuchte(LeuchteDaten leuchte, StateUpdate update) {
       children: [
         Image.asset(
           "img/ButtonLight.png",
-          color: leuchte.leuchtet
-              ? const Color.fromRGBO(255, 255, 0, 1)
-              : const Color.fromRGBO(255, 255, 255, 1),
-          colorBlendMode: BlendMode.modulate,
         ),
+        Container(
+          width: 76.1616,
+          height: 76.1616,
+          decoration: new BoxDecoration(
+            color: leuchte.leuchtet
+                ? const Color.fromRGBO(255, 255, 0, 0.75)
+                : const Color.fromRGBO(255, 255, 0, 0),
+            shape: BoxShape.circle,
+          ),),
         Text(
           intToChar(leuchte.id),
           style: const TextStyle(color: Colors.white, fontSize: 25),
