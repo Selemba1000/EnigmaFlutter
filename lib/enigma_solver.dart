@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:async/async.dart';
 import 'package:enigma/enigma.dart';
@@ -100,9 +101,6 @@ Future<void> mainIsolate(SendPort snd) async {
     }
   });
 
-  List<Solution> solutions = [];
-  int counter = 0;
-  int poss = 3*3*3*3*26*26*26;
   List<ReceivePort> rports = List<ReceivePort>.generate(running, (index) => ReceivePort());
   List<StreamQueue> rstr = rports.map((e) => StreamQueue(e)).toList();
   List<SendPort> sports = [];
@@ -112,20 +110,27 @@ Future<void> mainIsolate(SendPort snd) async {
     isolates.add(await Isolate.spawn(workerTask, rports[i].sendPort));
     SendPort sp = await rstr[i].next;
     sports.add(sp);
-    sp.send(i);
-    sp.send(crypt.substring(0,200));
+    sp.send((i*100/running).ceil());
+    sp.send(crypt.substring((100/running*i).ceil(),(100/running*(i+1)).ceil()));
     sp.send(propabilitygrid);
   }
   var stopwatch = Stopwatch();
   stopwatch.start();
-  for (var element in sports) {
-    element.send(counter);
-    counter++;
-  }
 
-  output.send(Update(counter/poss, stopwatch.elapsed,counter));
+
+  output.send(Update(stopwatch.elapsed));
 
   var rstrc = StreamQueue(StreamGroup.merge(rstr.map((e) => e.rest)));
+  final Uint8List allposccomplete = await rstrc.next as Uint8List;
+  Uint8List get;
+  for(var aaa = 1;aaa<running;aaa++){
+    get = await rstrc.next as Uint8List;
+    for(var aab = 0; aab< get.length;aab++){
+      allposccomplete[aab]+=get[aab];
+    }
+  }
+  List<List<int>> solutions = List<List<int>>.generate(allposccomplete.length, (index) => [index, allposccomplete[index]]);
+  /*
 
   while(solutions.length<poss){
     var get = await rstrc.next as Solution;
@@ -142,7 +147,9 @@ Future<void> mainIsolate(SendPort snd) async {
       }
   }
 
-  output.send(Update(counter/poss, stopwatch.elapsed,counter,finishing: true));
+   */
+
+  output.send(Update(stopwatch.elapsed,finishing: true));
 
   /*
   while(solutions.length<poss){
@@ -168,19 +175,19 @@ Future<void> mainIsolate(SendPort snd) async {
   for(var port in rports){
     port.close();
   }
-  solutions.sort((a,b) => b.score.compareTo(a.score));
+  solutions.sort((a,b) => b[1].compareTo(a[1]));
 
   var tmp = solutions.take(10).toList().map((e) {
-    int ukw = (e.config%3)+100;
-    int w3 = ((e.config/3).round()%3)+1;
-    int s3 = (e.config/3/3).round()%26;
-    int w2 = ((e.config/3/3/26).round()%3)+1;
-    int s2 = (e.config/3/3/26/3).round()%26;
-    int w1 = ((e.config/3/3/26/3/26).round()%3)+1;
-    int s1 = (e.config/3/3/26/3/26/3).round()%26;
+    int ukw = (e[0]%3)+100;
+    int w3 = ((e[0]/78).floor()%3)+1;
+    int s3 = (e[0]/3).floor()%26;
+    int w2 = ((e[0]/6084).floor()%3)+1;
+    int s2 = (e[0]/234).floor()%26;
+    int w1 = ((e[0]/474551).floor()%3)+1;
+    int s1 = (e[0]/18252).floor()%26;
     var enigma = Enigma(w1, s1, w2, s2, w3, s3, ukw);
     var clear = enigma.schluesselnString(crypt);
-    return Solution(e.config, clear, e.score, e.workerID);
+    return Solution(e[0], clear, e[1].toDouble(), 0);
   }).toList();
   stopwatch.stop();
   output.send(Finish(tmp, stopwatch.elapsed));
@@ -194,13 +201,30 @@ void workerTask(SendPort snd) async {
   var rcvs = StreamQueue(rcv);
   String crypt;
   List<double> propabilitygrid;
-  //sleep(Duration(seconds: 1));
   snd.send(rcv.sendPort);
-  int workerID = await rcvs.next;
+  int predchars = await rcvs.next;
   crypt = await rcvs.next;
   propabilitygrid = await rcvs.next;
+  final Uint8List allposc = Uint8List(1423656);
+  ByteData curpos;
+  List<int> cryptnum = List<int>.generate(crypt.length,(index) =>crypt.codeUnits[index]-65);
+  for(var aaa = 0;aaa<cryptnum.length;aaa++){
+    curpos = ByteData.view(File("lib/assets/allpossibilitiesbyletter/" + (predchars+aaa).toString() + "/" + cryptnum[aaa].toString() + ".bin").readAsBytesSync().buffer);
+    //curposb = ByteData.view(curpos);
+    for (int aab = 0; aab < curpos.lengthInBytes/4; aab++)
+    {
+      allposc[curpos.getUint32(aab*4)]++;
+      //print(curpos.getUint32(aab*4));
+    }
+  }
+  snd.send(allposc);
+  allposc.sort;
+  print(allposc[0]);
+
+  /*
   while(true){
     var get = await rcvs.next;
+
     if (get is int){
       int ukw = (get%3)+100;
       int w3 = ((get/3).round()%3)+1;
@@ -216,11 +240,15 @@ void workerTask(SendPort snd) async {
         var count = intToChar(i).allMatches(clear).length;
         score+=logdb(clear.length, propabilitygrid[i], count);
       }
+
+
       snd.send(Solution(get, clear, score, workerID));
     }else{
       break;
     }
   }
+
+     */
   Isolate.exit();
 }
 
@@ -232,11 +260,9 @@ double logdb(num n,num p,num x){
 }
 
 class Update{
-  double progress;
   Duration time;
-  int ops;
   bool finishing;
-  Update(this.progress,this.time,this.ops,{this.finishing = false});
+  Update(this.time,{this.finishing = false});
 }
 
 class Finish{

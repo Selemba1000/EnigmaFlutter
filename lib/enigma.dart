@@ -167,7 +167,7 @@ class Walze {
           17,
           15
         ];
-        _uebertragskerbe = 5;
+        _uebertragskerbe = 22;
         break;
       case 100:
         _verkabelung = [

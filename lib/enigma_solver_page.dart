@@ -210,7 +210,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: LinearProgressIndicator(
-                      value: data.progress,
+                      value: 0,
                       minHeight: 10,
                     ),
                   ),
@@ -220,20 +220,20 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                       Padding(
                         padding:
                             const EdgeInsets.only(bottom: 10, right: 10, left: 10),
-                        child: Text((data.progress*100).toStringAsFixed(1) + "%"),
+                        child: Text((0).toStringAsFixed(1) + "%"),
                       ),
                       Padding(
                         padding:
                             const EdgeInsets.only(bottom: 10, right: 10, left: 10),
-                        child: Text(((data.ops / data.time.inSeconds))
+                        child: Text(((0 / data.time.inSeconds))
                                 .toStringAsFixed(0) +
                             "ops/s"),
                       ),
                       Padding(
                         padding:
                             const EdgeInsets.only(bottom: 10, right: 10, left: 10),
-                        child: Text(((data.time.inSeconds / data.progress) *
-                                    (1 - data.progress))
+                        child: Text(((0) *
+                                    (1 - 0))
                                 .toStringAsFixed(1) +
                             "s"),
                       ),
@@ -298,7 +298,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text("Benötigte Zeit: "+data.time.inSeconds.toStringAsFixed(0)+"s"),
+                    Text("Benötigte Zeit: "+data.time.inMilliseconds.toStringAsFixed(0)+"ms"),
                     Text("Konfiguration: "+getConfig(data.solutions[page].config)),
                   ],
                 ),
@@ -318,11 +318,11 @@ class _LoadingWidgetState extends State<LoadingWidget> {
 
 String getConfig(int config){
   int ukw = (config%3);
-  int w3 = ((config/3).round()%3)+1;
-  int s3 = (config/3/3).round()%26;
-  int w2 = ((config/3/3/26).round()%3)+1;
-  int s2 = (config/3/3/26/3).round()%26;
-  int w1 = ((config/3/3/26/3/26).round()%3)+1;
-  int s1 = (config/3/3/26/3/26/3).round()%26;
+  int w3 = ((config/78).floor()%3)+1;
+  int s3 = (config/3).floor()%26;
+  int w2 = ((config/6084).floor()%3)+1;
+  int s2 = (config/234).floor()%26;
+  int w1 = ((config/474551).floor()%3)+1;
+  int s1 = (config/18252).floor()%26;
   return w1.toString()+" \\/ "+intToChar(s1)+" | "+w2.toString()+" \\/ "+intToChar(s2)+" | "+w3.toString()+" \\/ "+intToChar(s3)+" | "+intToChar(ukw);
 }
