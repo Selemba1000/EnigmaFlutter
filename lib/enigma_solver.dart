@@ -110,8 +110,8 @@ Future<void> mainIsolate(SendPort snd) async {
     isolates.add(await Isolate.spawn(workerTask, rports[i].sendPort));
     SendPort sp = await rstr[i].next;
     sports.add(sp);
-    sp.send((i*100/running).ceil());
-    sp.send(crypt.substring((100/running*i).ceil(),(100/running*(i+1)).ceil()));
+    sp.send((i*400/running).ceil());
+    sp.send(crypt.substring((400/running*i).ceil(),(400/running*(i+1)).ceil()));
     sp.send(propabilitygrid);
   }
   var stopwatch = Stopwatch();
