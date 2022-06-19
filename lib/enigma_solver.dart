@@ -218,9 +218,11 @@ void workerTask(SendPort snd) async {
     }
   }
   snd.send(allposc);
+  /*
   allposc.sort;
   print(allposc[0]);
 
+   */
   /*
   while(true){
     var get = await rcvs.next;

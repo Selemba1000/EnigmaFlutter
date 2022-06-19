@@ -35,7 +35,7 @@ class _BasicEnigmaSate extends State<BasicEnigma> {
               const Padding(
                   padding: EdgeInsets.all(10),
                   child: Text(
-                    "Enigma M1",
+                    "Enigma I",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   )),
               Form(

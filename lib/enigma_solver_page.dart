@@ -89,7 +89,7 @@ class _InputFieldsState extends State<InputFields> {
           const Padding(
               padding: EdgeInsets.all(10),
               child: Text(
-                "Brute Force Enigma M1",
+                "Brute Force Enigma I",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
               )),
           Padding(
